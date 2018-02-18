@@ -86,18 +86,23 @@ convnet = tf.contrib.layers.batch_norm(convnet, data_format='NHWC', center=True,
 convnet = conv_2d(convnet, 32, 5, activation='relu')
 convnet = max_pool_2d(convnet, 5)
 
+convnet = tf.contrib.layers.batch_norm(convnet, data_format='NHWC', center=True, scale=True, scope='convnet-batch-norm')
 convnet = conv_2d(convnet, 64, 5, activation='relu')
 convnet = max_pool_2d(convnet, 5)
 
+convnet = tf.contrib.layers.batch_norm(convnet, data_format='NHWC', center=True, scale=True, scope='convnet-batch-norm')
 convnet = conv_2d(convnet, 128, 5, activation='relu')
 convnet = max_pool_2d(convnet, 5)
 
+convnet = tf.contrib.layers.batch_norm(convnet, data_format='NHWC', center=True, scale=True, scope='convnet-batch-norm')
 convnet = conv_2d(convnet, 64, 5, activation='relu')
 convnet = max_pool_2d(convnet, 5)
 
+convnet = tf.contrib.layers.batch_norm(convnet, data_format='NHWC', center=True, scale=True, scope='convnet-batch-norm')
 convnet = conv_2d(convnet, 32, 5, activation='relu')
 convnet = max_pool_2d(convnet, 5)
 
+convnet = tf.contrib.layers.batch_norm(convnet, data_format='NHWC', center=True, scale=True, scope='convnet-batch-norm')
 convnet = fully_connected(convnet, 1024, activation='relu')
 convnet = dropout(convnet, 0.8)
 
