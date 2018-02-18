@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import os
 from random import shuffle
+import random
 from tqdm import tqdm
 import tensorflow as tf
 import matplotlib.pyplot as plt
@@ -14,11 +15,14 @@ from tflearn.layers.estimator import regression
 
 TRAIN_DIR = 'train'
 TEST_DIR = 'test'
-IMG_SIZE = 50
+
+#hyperparameters
+IMG_SIZE = 50  #default shape of resized image, always IMG_SIZE x IMG_SIZE. FIXED
 LR = 1e-3
+EPOCH_NUM = 10
+PRED_SIZE = 16  #number of sample predictions to be done, max 16
 
 MODEL_NAME = 'dogs-vs-cats-convnet'
-
 
 
 def create_label(image_name):
@@ -72,11 +76,13 @@ X_test = np.array([i[0] for i in test]).reshape(-1, IMG_SIZE, IMG_SIZE, 1)
 y_test = [i[1] for i in test]
 
 
+#layers
 
 tf.reset_default_graph()
 
 convnet = input_data(shape=[None, IMG_SIZE, IMG_SIZE, 1], name='input')
 
+convnet = tf.contrib.layers.batch_norm(convnet, data_format='NHWC', center=True, scale=True, scope='convnet-batch-norm')
 convnet = conv_2d(convnet, 32, 5, activation='relu')
 convnet = max_pool_2d(convnet, 5)
 
@@ -100,9 +106,14 @@ convnet = regression(convnet, optimizer='adam', learning_rate=LR, loss='categori
 
 model = tflearn.DNN(convnet, tensorboard_dir='log', tensorboard_verbose=0)
 
-model.fit({'input': X_train}, {'targets': y_train}, n_epoch=10,
+model.fit({'input': X_train}, {'targets': y_train}, n_epoch=EPOCH_NUM,
           validation_set=({'input': X_test}, {'targets': y_test}),
           snapshot_step=500, show_metric=True, run_id=MODEL_NAME)
+
+
+#predictions
+tf.set_random_seed(111)
+rand_n = random.randint(0, len(test)-PRED_SIZE-1)
 
 d = test_data[0]
 img_data, img_num = d
@@ -110,9 +121,9 @@ img_data, img_num = d
 data = img_data.reshape(IMG_SIZE, IMG_SIZE, 1)
 prediction = model.predict([data])[0]
 
-fig=plt.figure(figsize=(16, 12))
+fig=plt.figure(figsize=(16, 16))
 
-for num, data in enumerate(test_data[:16]):
+for num, data in enumerate(test_data[rand_n:rand_n+PRED_SIZE]):
     
     img_num = data[1]
     img_data = data[0]
