@@ -4,6 +4,7 @@ This project uses a vanilla cnn, and is part of a University Project.
 
 Implemented with tensorflow, while the dense layer uses tflearn to simplify things.
 
+Note that batch norm should be done after the non-linearity, and before the dropout.
 
 Done:
 
